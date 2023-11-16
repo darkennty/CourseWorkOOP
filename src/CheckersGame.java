@@ -14,6 +14,8 @@ public class CheckersGame extends JFrame implements ActionListener {
     private JButton selectedButton;
     private Color movablePieceColor;
     private Color lastMovablePieceColor = Color.BLACK;
+    private String cwd = System.getProperty("user.dir");
+
     private MoveColorLabel label;
     private GridBagConstraints c;
     private GridBagLayout layout;
@@ -65,10 +67,10 @@ public class CheckersGame extends JFrame implements ActionListener {
             for (int j = 0; j < SIZE; j++) {
                 if ((i + j) % 2 == 1) {
                     if (i <= 2) {
-                        board[i][j] = new JButton(new ImageIcon("C:\\black_checker.PNG"));
+                        board[i][j] = new JButton(new ImageIcon(cwd + "/src/resources/black_checker.PNG"));
                         pieces[i][j] = new CheckerPiecesColors(Color.BLACK);
                     } else if (i >= 5) {
-                        board[i][j] = new JButton(new ImageIcon("C:\\white_checker.PNG"));
+                        board[i][j] = new JButton(new ImageIcon(cwd + "/src/resources/white_checker.PNG"));
                         pieces[i][j] = new CheckerPiecesColors(Color.WHITE);
                     } else {
                         board[i][j] = new JButton();
@@ -259,16 +261,16 @@ public class CheckersGame extends JFrame implements ActionListener {
                 if (pieces[i][j] != null) {
                     if (pieces[i][j].getColor().equals(Color.WHITE)) {
                         ++whiteCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon("C:\\white_checker.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\white_checker.png"));
                     } else if (pieces[i][j].getColor().equals(Color.BLACK)) {
                         ++blackCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon("C:\\black_checker.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\black_checker.png"));
                     } else if (pieces[i][j].getColor().equals(Color.LIGHT_GRAY)) {
                         ++whiteCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon("C:\\white_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\white_damka.png"));
                     } else if (pieces[i][j].getColor().equals(Color.DARK_GRAY)) {
                         ++blackCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon("C:\\black_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\black_damka.png"));
                     }
                 } else {
                     board[i][j].setIcon(null);

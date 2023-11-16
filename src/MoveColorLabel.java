@@ -14,5 +14,8 @@ public class MoveColorLabel extends JLabel {
             super.setText("Ход белых");
         }
         super.setAlignmentX(Component.CENTER_ALIGNMENT);
+        super.setFont(new Font("Default", Font.PLAIN, 32));
+        super.setBounds(0,0, 300, 30);
+        super.setPreferredSize(new Dimension(120, 30));
     }
 }
