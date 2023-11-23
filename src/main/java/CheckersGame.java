@@ -5,29 +5,23 @@ import java.awt.event.ActionListener;
 
 import static consts.Consts.SIZE;
 
-public class CheckersGame extends JFrame implements ActionListener {
+public class CheckersGame implements ActionListener {
 
-    private final JPanel panel = new JPanel();
-    private final JFrame frame;
+    private final JPanel gamePanel = new JPanel();
     private final JButton[][] board = new JButton[SIZE][SIZE];
     private CheckerPiecesColors[][] pieces;
     private JButton selectedButton;
     private Color movablePieceColor;
     private Color lastMovablePieceColor = Color.BLACK;
-    private String cwd = System.getProperty("user.dir");
+    private final String cwd = System.getProperty("user.dir");
+    private final MoveColorLabel label;
+    private final GridBagConstraints c;
+    private final GridBagLayout layout;
 
-    private MoveColorLabel label;
-    private GridBagConstraints c;
-    private GridBagLayout layout;
-
-    public CheckersGame(JFrame frame) {
-        super("Checkers Surrender");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        this.frame = frame;
+    public CheckersGame(CardLayout cardLayout, JPanel cardPanel) {
 
         layout = new GridBagLayout();
-        panel.setLayout(layout);
+        gamePanel.setLayout(layout);
 
         label = new MoveColorLabel(Color.BLACK);
 
@@ -41,23 +35,30 @@ public class CheckersGame extends JFrame implements ActionListener {
         c.ipady = 0;
         c.weightx = 0.0;
         c.weighty = 0.0;
-        c.gridwidth = 5;
+        c.gridwidth = 4;
         c.gridheight = 1;
 
         layout.setConstraints(label, c);
-        panel.add(label);
+        gamePanel.add(label);
+
+        c.gridwidth = 2;
 
         JButton menu = new JButton("Выход в меню");
-        menu.addActionListener(new ActionListenerForMainMenu());
+        menu.addActionListener(new ActionListenerForMainMenu(cardLayout, cardPanel, "menu"));
         layout.setConstraints(menu, c);
-        panel.add(menu, GridBagConstraints.RELATIVE);
+        gamePanel.add(menu);
+
+        JButton exit = new JButton("Выход из игры");
+        exit.addActionListener(new ActionListenerForExit());
+        layout.setConstraints(exit, c);
+        gamePanel.add(exit);
 
         c.gridwidth = 1;
         c.gridy = c.gridy + 2;
+    }
 
-        initializeBoard();
-
-        this.add(panel);
+    public JPanel getGamePanel() {
+        return gamePanel;
     }
 
     public void initializeBoard() {
@@ -67,10 +68,10 @@ public class CheckersGame extends JFrame implements ActionListener {
             for (int j = 0; j < SIZE; j++) {
                 if ((i + j) % 2 == 1) {
                     if (i <= 2) {
-                        board[i][j] = new JButton(new ImageIcon(cwd + "/src/resources/black_checker.PNG"));
+                        board[i][j] = new JButton(new ImageIcon(cwd + "\\src\\main\\resources\\black_checker.PNG"));
                         pieces[i][j] = new CheckerPiecesColors(Color.BLACK);
                     } else if (i >= 5) {
-                        board[i][j] = new JButton(new ImageIcon(cwd + "/src/resources/white_checker.PNG"));
+                        board[i][j] = new JButton(new ImageIcon(cwd + "\\src\\main\\resources\\white_checker.PNG"));
                         pieces[i][j] = new CheckerPiecesColors(Color.WHITE);
                     } else {
                         board[i][j] = new JButton();
@@ -85,7 +86,7 @@ public class CheckersGame extends JFrame implements ActionListener {
                 board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GREEN));
                 board[i][j].setBorderPainted(false);
                 layout.setConstraints(board[i][j], c);
-                panel.add(board[i][j], GridBagConstraints.RELATIVE);
+                gamePanel.add(board[i][j], GridBagConstraints.RELATIVE);
             }
             c.gridy++;
         }
@@ -122,7 +123,8 @@ public class CheckersGame extends JFrame implements ActionListener {
                 boolean checkRightMove = false;
 
                 if (movablePieceColor.equals(Color.LIGHT_GRAY) && pieces[toRow][toCol] == null) {
-                    int eatableCheckers = -1;
+                    int eatableCheckers = 0;
+
                     if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && pieces[toRow + 1][toCol + 1].getColor().equals(Color.BLACK)) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, toCol, fromCol);
                         if (eatableCheckers == 1) {
@@ -151,8 +153,10 @@ public class CheckersGame extends JFrame implements ActionListener {
                     }
 
                     checkRightMove = true;
+
                 } else if (movablePieceColor.equals(Color.DARK_GRAY)) {
-                    int eatableCheckers = -1;
+                    int eatableCheckers = 0;
+
                     if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && pieces[toRow + 1][toCol + 1].getColor().equals(Color.WHITE)) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, toCol, fromCol);
                     } else if (fromRow > toRow && fromCol < toCol && pieces[toRow + 1][toCol - 1] != null && pieces[toRow + 1][toCol - 1].getColor().equals(Color.WHITE)) {
@@ -173,6 +177,7 @@ public class CheckersGame extends JFrame implements ActionListener {
                     }
 
                     checkRightMove = true;
+
                 } else if ((movablePieceColor.equals(Color.WHITE) && (toRow + 1 == fromRow) && colDiff == 1 && pieces[toRow][toCol] == null) || (movablePieceColor.equals(Color.BLACK) && fromRow + 1 == toRow && colDiff == 1 && pieces[toRow][toCol] == null)) {
                     pieces[toRow][toCol] = pieces[fromRow][fromCol];
                     pieces[fromRow][fromCol] = null;
@@ -194,10 +199,16 @@ public class CheckersGame extends JFrame implements ActionListener {
                     pieces[toRow][toCol] = new CheckerPiecesColors(Color.LIGHT_GRAY);
                 }
 
-                updateMove(movablePieceColor);
                 updateBoard();
 
+                if (movablePieceColor.equals(Color.LIGHT_GRAY)) {
+                    movablePieceColor = Color.WHITE;
+                } else if (movablePieceColor.equals(Color.DARK_GRAY)) {
+                    movablePieceColor = Color.BLACK;
+                }
+
                 if (checkRightMove) {
+                    updateMove(movablePieceColor);
                     selectedButton.setBorderPainted(false);
                     selectedButton = null;
                     lastMovablePieceColor = movablePieceColor;
@@ -223,8 +234,8 @@ public class CheckersGame extends JFrame implements ActionListener {
     }
 
     private void eatCheckersByDamka(int fromRow, int toRow, int fromCol, int toCol) {
-        for (int i = fromRow; i < toRow; i++) {
-            for (int j = fromCol; j < toCol; j++) {
+        for (int i = fromRow + 1; i < toRow; i++) {
+            for (int j = fromCol + 1; j < toCol; j++) {
                 pieces[i][j] = null;
             }
         }
@@ -261,16 +272,16 @@ public class CheckersGame extends JFrame implements ActionListener {
                 if (pieces[i][j] != null) {
                     if (pieces[i][j].getColor().equals(Color.WHITE)) {
                         ++whiteCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\white_checker.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\white_checker.png"));
                     } else if (pieces[i][j].getColor().equals(Color.BLACK)) {
                         ++blackCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\black_checker.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\black_checker.png"));
                     } else if (pieces[i][j].getColor().equals(Color.LIGHT_GRAY)) {
                         ++whiteCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\white_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\white_damka.png"));
                     } else if (pieces[i][j].getColor().equals(Color.DARK_GRAY)) {
                         ++blackCheckersCounter;
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\resources\\black_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\black_damka.png"));
                     }
                 } else {
                     board[i][j].setIcon(null);
@@ -279,9 +290,9 @@ public class CheckersGame extends JFrame implements ActionListener {
         }
 
         if (whiteCheckersCounter == 0) {
-
+            updateMove(Color.GREEN);
         } else if (blackCheckersCounter == 0) {
-
+            updateMove(Color.RED);
         }
     }
 
