@@ -1,25 +1,37 @@
+import actionListeners.ActionListenerForContinueGame;
+import actionListeners.ActionListenerForExit;
+import actionListeners.ActionListenerForStartGame;
+import labels.PoddavkiLabel;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 
 public class Menu extends JFrame {
 
-    private JPanel menuPanel = new JPanel();
-    private CardLayout cardLayout = new CardLayout();
-    private JPanel cardPanel = new JPanel(cardLayout);
+    private final JPanel menuPanel;
+    private final CardLayout cardLayout;
+    private final JPanel cardPanel;
 
     public Menu() {
         super("Checkers Surrender");
 
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(480, 510);
+        super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super.setSize(480, 510);
+
+        menuPanel = new JPanel();
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
+    }
+
+    public void start() {
 
         PoddavkiLabel label = new PoddavkiLabel();
 
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBackground(Color.decode("#D2B48C"));
         menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
-        menuPanel.setPreferredSize(new Dimension(480, 480));
+        menuPanel.setPreferredSize(new Dimension(480, 510));
 
         JButton startGame = new JButton("Начать новую игру");
         startGame.setBackground(Color.decode("#D2B48C"));

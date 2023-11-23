@@ -1,12 +1,14 @@
+package actionListeners;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ActionListenerForContinueGame implements ActionListener {
+public class ActionListenerForExit implements ActionListener {
 
-    public ActionListenerForContinueGame() {}
+    public ActionListenerForExit() {}
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
+        System.exit(0);
     }
 }

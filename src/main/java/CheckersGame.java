@@ -1,3 +1,7 @@
+import actionListeners.ActionListenerForExit;
+import actionListeners.ActionListenerForMainMenu;
+import labels.MoveColorLabel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -123,24 +127,24 @@ public class CheckersGame implements ActionListener {
                 boolean checkRightMove = false;
 
                 if (movablePieceColor.equals(Color.LIGHT_GRAY) && pieces[toRow][toCol] == null) {
-                    int eatableCheckers = 0;
+                    int eatableCheckers = -1;
 
-                    if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && pieces[toRow + 1][toCol + 1].getColor().equals(Color.BLACK)) {
+                    if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && (pieces[toRow + 1][toCol + 1].getColor().equals(Color.BLACK) || pieces[toRow + 1][toCol + 1].getColor().equals(Color.DARK_GRAY))) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, toCol, fromCol);
                         if (eatableCheckers == 1) {
                             eatCheckersByDamka(toRow, fromRow, toCol, fromCol);
                         }
-                    } else if (fromRow > toRow && fromCol < toCol && pieces[toRow + 1][toCol - 1] != null && pieces[toRow + 1][toCol - 1].getColor().equals(Color.BLACK)) {
+                    } else if (fromRow > toRow && fromCol < toCol && pieces[toRow + 1][toCol - 1] != null && (pieces[toRow + 1][toCol - 1].getColor().equals(Color.BLACK) || pieces[toRow + 1][toCol - 1].getColor().equals(Color.DARK_GRAY))) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, fromCol, toCol);
                         if (eatableCheckers == 1) {
                             eatCheckersByDamka(toRow, fromRow, fromCol, toCol);
                         }
-                    } else if (fromRow < toRow && fromCol > toCol && pieces[toRow - 1][toCol + 1] != null && pieces[toRow - 1][toCol + 1].getColor().equals(Color.BLACK)) {
+                    } else if (fromRow < toRow && fromCol > toCol && pieces[toRow - 1][toCol + 1] != null && (pieces[toRow - 1][toCol + 1].getColor().equals(Color.BLACK) || pieces[toRow - 1][toCol + 1].getColor().equals(Color.DARK_GRAY))) {
                         eatableCheckers = checkEatableCheckers(fromRow, toRow, toCol, fromCol);
                         if (eatableCheckers == 1) {
                             eatCheckersByDamka(fromRow, toRow, toCol, fromCol);
                         }
-                    } else if (fromRow < toRow && fromCol < toCol && pieces[toRow - 1][toCol - 1] != null && pieces[toRow - 1][toCol - 1].getColor().equals(Color.BLACK)) {
+                    } else if (fromRow < toRow && fromCol < toCol && pieces[toRow - 1][toCol - 1] != null && (pieces[toRow - 1][toCol - 1].getColor().equals(Color.BLACK) || pieces[toRow - 1][toCol - 1].getColor().equals(Color.DARK_GRAY))) {
                         eatableCheckers = checkEatableCheckers(fromRow, toRow, fromCol, toCol);
                         if (eatableCheckers == 1) {
                             eatCheckersByDamka(fromRow, toRow, fromCol, toCol);
@@ -150,28 +154,35 @@ public class CheckersGame implements ActionListener {
                     if (eatableCheckers == 1 || eatableCheckers == 0) {
                         pieces[toRow][toCol] = pieces[fromRow][fromCol];
                         pieces[fromRow][fromCol] = null;
+                        checkRightMove = true;
                     }
 
-                    checkRightMove = true;
-
-                } else if (movablePieceColor.equals(Color.DARK_GRAY)) {
+                } else if (movablePieceColor.equals(Color.DARK_GRAY) && pieces[toRow][toCol] == null) {
                     int eatableCheckers = 0;
 
-                    if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && pieces[toRow + 1][toCol + 1].getColor().equals(Color.WHITE)) {
+                    if (fromRow > toRow && fromCol > toCol && pieces[toRow + 1][toCol + 1] != null && (pieces[toRow + 1][toCol + 1].getColor().equals(Color.WHITE) || pieces[toRow + 1][toCol + 1].getColor().equals(Color.LIGHT_GRAY))) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, toCol, fromCol);
-                    } else if (fromRow > toRow && fromCol < toCol && pieces[toRow + 1][toCol - 1] != null && pieces[toRow + 1][toCol - 1].getColor().equals(Color.WHITE)) {
+                        if (eatableCheckers == 1) {
+                            eatCheckersByDamka(toRow, fromRow, toCol, fromCol);
+                        }
+                    } else if (fromRow > toRow && fromCol < toCol && pieces[toRow + 1][toCol - 1] != null && (pieces[toRow + 1][toCol - 1].getColor().equals(Color.WHITE) || pieces[toRow + 1][toCol - 1].getColor().equals(Color.LIGHT_GRAY))) {
                         eatableCheckers = checkEatableCheckers(toRow, fromRow, fromCol, toCol);
-                    } else if (fromRow < toRow && fromCol > toCol && pieces[toRow - 1][toCol + 1] != null && pieces[toRow - 1][toCol + 1].getColor().equals(Color.WHITE)) {
+                        if (eatableCheckers == 1) {
+                            eatCheckersByDamka(toRow, fromRow, fromCol, toCol);
+                        }
+                    } else if (fromRow < toRow && fromCol > toCol && pieces[toRow - 1][toCol + 1] != null && (pieces[toRow - 1][toCol + 1].getColor().equals(Color.WHITE) || pieces[toRow - 1][toCol + 1].getColor().equals(Color.LIGHT_GRAY))) {
                         eatableCheckers = checkEatableCheckers(fromRow, toRow, toCol, fromCol);
-                    } else if (fromRow < toRow && fromCol < toCol && pieces[toRow - 1][toCol - 1] != null && pieces[toRow - 1][toCol - 1].getColor().equals(Color.WHITE)) {
+                        if (eatableCheckers == 1) {
+                            eatCheckersByDamka(fromRow, toRow, toCol, fromCol);
+                        }
+                    } else if (fromRow < toRow && fromCol < toCol && pieces[toRow - 1][toCol - 1] != null && (pieces[toRow - 1][toCol - 1].getColor().equals(Color.WHITE) || pieces[toRow - 1][toCol - 1].getColor().equals(Color.LIGHT_GRAY))) {
                         eatableCheckers = checkEatableCheckers(fromRow, toRow, fromCol, toCol);
+                        if (eatableCheckers == 1) {
+                            eatCheckersByDamka(fromRow, toRow, fromCol, toCol);
+                        }
                     }
 
-                    if (eatableCheckers == 1) {
-                        eatCheckersByDamka(toRow, fromRow, toCol, fromCol);
-                        pieces[toRow][toCol] = pieces[fromRow][fromCol];
-                        pieces[fromRow][fromCol] = null;
-                    } else if (eatableCheckers == 0) {
+                    if (eatableCheckers == 1 || eatableCheckers == 0) {
                         pieces[toRow][toCol] = pieces[fromRow][fromCol];
                         pieces[fromRow][fromCol] = null;
                     }
@@ -219,25 +230,27 @@ public class CheckersGame implements ActionListener {
 
     private int checkEatableCheckers(int fromRow, int toRow, int fromCol, int toCol) {
         int counter = 0;
+        int j = fromCol + 1;
+
         for (int i = fromRow + 1; i < toRow; i++) {
-            for (int j = fromCol + 1; j < toCol; j++) {
-                if (pieces[i][j] != null && (pieces[i][j].getColor().equals(Color.BLACK) || pieces[i][j].getColor().equals(Color.DARK_GRAY))) {
-                    counter++;
-                }
-                if (pieces[i][j] != null && (pieces[i][j].getColor().equals(Color.WHITE) || pieces[i][j].getColor().equals(Color.DARK_GRAY))) {
-                    counter = 0;
-                    break;
-                }
+            if (pieces[i][j] != null && (pieces[i][j].getColor().equals(Color.BLACK) || pieces[i][j].getColor().equals(Color.DARK_GRAY))) {
+                counter++;
             }
+            if (pieces[i][j] != null && (pieces[i][j].getColor().equals(Color.WHITE) || pieces[i][j].getColor().equals(Color.LIGHT_GRAY))) {
+                counter = 0;
+                break;
+            }
+            j++;
         }
         return counter;
     }
 
     private void eatCheckersByDamka(int fromRow, int toRow, int fromCol, int toCol) {
+        int j = fromCol + 1;
+
         for (int i = fromRow + 1; i < toRow; i++) {
-            for (int j = fromCol + 1; j < toCol; j++) {
-                pieces[i][j] = null;
-            }
+            pieces[i][j] = null;
+            j++;
         }
     }
 
