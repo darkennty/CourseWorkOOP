@@ -1,7 +1,10 @@
+package domain;
+
 import actionListeners.ActionListenerForContinueGame;
 import actionListeners.ActionListenerForExit;
 import actionListeners.ActionListenerForStartGame;
 import labels.PoddavkiLabel;
+import panels.ImagePanel;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -9,7 +12,7 @@ import java.awt.*;
 
 public class Menu extends JFrame {
 
-    private final JPanel menuPanel;
+    private final ImagePanel menuPanel;
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
 
@@ -19,7 +22,7 @@ public class Menu extends JFrame {
         super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         super.setSize(480, 510);
 
-        menuPanel = new JPanel();
+        menuPanel = new ImagePanel();
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
     }
@@ -34,9 +37,11 @@ public class Menu extends JFrame {
         menuPanel.setPreferredSize(new Dimension(480, 510));
 
         JButton startGame = new JButton("Начать новую игру");
+        startGame.setOpaque(false);
         startGame.setBackground(Color.decode("#D2B48C"));
         startGame.setBounds(0,120, 120, 120);
-        startGame.setFont(new Font("Copperplate", Font.PLAIN, 28));
+        startGame.setFont(new Font("Arial", Font.PLAIN, 28));
+        startGame.setForeground(Color.WHITE);
         startGame.setPreferredSize(new Dimension(240, 100));
         startGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         startGame.setFocusable(false);
@@ -46,9 +51,11 @@ public class Menu extends JFrame {
         startGame.setBorder(new CompoundBorder(startBorder, marginTopTwenty));
 
         JButton continueGame = new JButton("Продолжить игру");
+        continueGame.setOpaque(false);
         continueGame.setBackground(Color.decode("#D2B48C"));
         continueGame.setBounds(0,240, 120, 120);
-        continueGame.setFont(new Font("Copperplate", Font.PLAIN, 28));
+        continueGame.setFont(new Font("Arial", Font.PLAIN, 28));
+        continueGame.setForeground(Color.WHITE);
         continueGame.setPreferredSize(new Dimension(240, 120));
         continueGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         continueGame.setFocusable(false);
@@ -57,9 +64,11 @@ public class Menu extends JFrame {
         continueGame.setBorder(new CompoundBorder(continueBorder, marginTopTwenty));
 
         JButton exitGame = new JButton("Выйти из игры");
+        exitGame.setOpaque(false);
         exitGame.setBackground(Color.decode("#D2B48C"));
         exitGame.setBounds(0,360, 120, 120);
-        exitGame.setFont(new Font("Copperplate", Font.PLAIN, 28));
+        exitGame.setFont(new Font("Arial", Font.PLAIN, 28));
+        exitGame.setForeground(Color.WHITE);
         exitGame.setPreferredSize(new Dimension(240, 120));
         exitGame.setAlignmentX(Component.CENTER_ALIGNMENT);
         exitGame.setFocusable(false);
@@ -74,13 +83,13 @@ public class Menu extends JFrame {
 
         cardPanel.add(menuPanel, "menu");
 
-        startGame.addActionListener(new ActionListenerForStartGame(cardLayout, cardPanel, "game"));
-        exitGame.addActionListener(new ActionListenerForExit());
-        continueGame.addActionListener(new ActionListenerForContinueGame());
-
         CheckersGame game = new CheckersGame(cardLayout, cardPanel);
 
-        game.initializeBoard();
+        startGame.addActionListener(new ActionListenerForStartGame(game, cardLayout, cardPanel, "game"));
+        exitGame.addActionListener(new ActionListenerForExit());
+        continueGame.addActionListener(new ActionListenerForContinueGame(game, cardLayout, cardPanel, "game"));
+
+        game.createBoard();
 
         JPanel gamePanel = game.getGamePanel();
 

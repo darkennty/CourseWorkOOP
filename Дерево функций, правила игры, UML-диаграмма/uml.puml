@@ -1,0 +1,185 @@
+@startuml
+
+class Main {
+    + main(String[] args) : void
+}
+
+class Menu {
+    - cardLayout : CardLayout
+    - cardPanel : CardPanel
+    - menuPanel : ImagePanel
+
+    + Menu()
+    + start() : void
+
+}
+
+class ActionListenerForStartGame {
+    - cardLayout : CardLayout
+    - container : JPanel
+    - db : MyDataBase
+    - game : CheckersGame
+    - panelNameToSwitchTo : String
+
+    + ActionListenerForStartGame(CheckersGame, CardLayout, JPanel, String)
+    + actionPerformed(ActionEvent) : void
+}
+
+class ActionListenerForMainMenu {
+    - cardLayout : CardLayout
+    - container : Container
+    - panelNameToSwitchTo : String
+
+    + ActionListenerForMainMenu(CardLayout, Container, String)
+    + actionPerformed(ActionEvent) : void
+}
+
+class ActionListenerForExit {
+    + ActionListenerForExit()
+    + actionPerformed(ActionEvent) : void
+}
+
+class ActionListenerForContinueGame {
+    - cardLayout : CardLayout
+    - container : JPanel
+    - game : CheckersGame
+    - panelNameToSwitchTo : String
+
+    + ActionListenerForStartGame(CheckersGame, CardLayout, JPanel, String)
+    + actionPerformed(ActionEvent) : void
+}
+
+class DatabaseProperties {
+    + getLogin() : String
+    + getPassword() : String
+    + getUrl() : String
+}
+
+class PropertiesFactory {
+    - properties DatabaseProperties
+
+    - PropertiesFactory()
+    + getProperties() : DatabaseProperties
+    - init() : void
+}
+
+interface Consts {
+    + CELLS_QUANTITY : int
+    + SIZE : int
+}
+
+class MyDataBase {
+    - instance : MyDataBase
+    - properties : DatabaseProperties
+
+    - MyDataBase()
+    - init() : void
+    + connect() : Connection
+    + createSchema() : void
+    - createTableChecker() : void
+    - createTableLastMove() : void
+    + deleteCheckers() : void
+    + deleteLastMove() : void
+    + execute(String) : void
+    + getAllFields() : Map<Integer, int[]>
+    + getBlackCheckers() : Map<Integer, int[]>
+    + getInstance() : MyDataBase
+    + getLastMove() : String
+    + getWhiteCheckers() : Map<Integer, int[]>
+    + getWhiteQueens() : Map<Integer, int[]>
+}
+
+class CheckersGame {
+    - board : JButton[][]
+    - c : GridBagConstraints
+    - cardLayout : CardLayout
+    - cardPanel : JPanel
+    - cwd : String
+    - db : MyDataBase
+    - gamePanel : JPanel
+    - instance : CheckersGame
+    - label : MoveColorLabel
+    - lastMovablePieceColor : Color
+    - layout : GridBagLayout
+    - movablePieceColor : Color
+    - movePersistence : LastMovePersistence
+    - persistence : CheckersPersistence
+    - pieces : CheckerPiecesColors[][]
+    - selectedButton : JButton
+
+    + CheckersGame(CardLayout, JPanel)
+    + actionPerformed(ActionEvent) : void
+    - checkRightEat(int, int, int) : int
+    - countCheckersBetweenCells(int, int, int, int) : int
+    + createBoard() : void
+    - eatCheckersByQueen(int, int, int, int) : void
+    - findCol(JButton) : int
+    - findRow(JButton) : int
+    + getGamePanel() : JPanel
+    + getInstance() : CheckersGame
+    + initializeBoard() : void
+    + loadBoard() : void
+    + updateBoard() : void
+    + updateMove(Color) : void
+}
+
+class CheckerPiecesColors {
+    - color : Color
+
+    + CheckerPiecesColors(Color)
+    + getColor() : Color
+}
+
+class MoveColorLabel {
+    + MoveColorLabel(Color)
+    + view(Color) : void
+}
+
+class PoddavkiLabel {
+    + PoddavkiLabel()
+    + view() : void
+}
+
+class ImagePanel {
+    - backgroundImage : BufferedImage
+    - cwd : String
+    - finalPath : String
+
+    + ImagePanel()
+    + paintComponent(Graphics) : void
+}
+
+class CheckersPersistence {
+    - db :  MyDataBase
+
+    + createChecker(int, int, int, String) : void
+    + updateChecker(int, int, int, String) : void
+}
+
+class LastMovePersistence {
+    - db :  MyDataBase
+
+    + createLastMove() : void
+    + updateLastMove(String) : void
+}
+
+Main <-- Menu
+Menu <-- CheckersGame
+Menu *-- ActionListenerForStartGame
+Menu *-- ActionListenerForContinueGame
+Menu *-- ActionListenerForExit
+Menu *-- ImagePanel
+Menu *-- PoddavkiLabel
+CheckersGame *-- MoveColorLabel
+CheckersGame *-- ActionListenerForExit
+CheckersGame *-- ActionListenerForMainMenu
+CheckersGame *-- CheckerPiecesColors
+CheckersGame *-- LastMovePersistence
+CheckersGame *-- CheckersPersistence
+CheckersGame <-- Consts
+CheckersGame o-- MyDataBase
+MyDataBase *-- DatabaseProperties
+PropertiesFactory *-- DatabaseProperties
+
+
+@enduml

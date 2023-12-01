@@ -1,15 +1,15 @@
 package actionListeners;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ActionListenerForMainMenu implements ActionListener {
 
-    private CardLayout cardLayout;
-    private Container container;
-    private String panelNameToSwitchTo;
+    private final CardLayout cardLayout;
+    private final Container container;
+    private final String panelNameToSwitchTo;
+
     public ActionListenerForMainMenu(CardLayout cardLayout, Container container, String panelNameToSwitchTo) {
         this.cardLayout = cardLayout;
         this.container = container;
@@ -18,6 +18,6 @@ public class ActionListenerForMainMenu implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        cardLayout.show(container, "menu");
+        cardLayout.show(container, panelNameToSwitchTo);
     }
 }

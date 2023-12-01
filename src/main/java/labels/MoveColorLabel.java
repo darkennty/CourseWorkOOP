@@ -15,9 +15,9 @@ public class MoveColorLabel extends JLabel {
         } else if (checkerColor.equals(Color.BLACK) || checkerColor.equals(Color.DARK_GRAY)) {
             super.setText("Ход белых");
         } else if (checkerColor.equals(Color.GREEN)) {
-            super.setText("Белые победили!");
+            super.setText("Победа белых!");
         } else if (checkerColor.equals(Color.RED)) {
-            super.setText("Чёрные победили!");
+            super.setText("Победа чёрных!");
         }
 
         super.setAlignmentX(Component.CENTER_ALIGNMENT);

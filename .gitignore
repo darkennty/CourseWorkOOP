@@ -1,7 +1,7 @@
 ### IntelliJ IDEA ###
 out/
 Poddavki.iml
-.iml
+*.iml
 .idea
 !**/src/main/**/out/
 !**/src/test/**/out/
