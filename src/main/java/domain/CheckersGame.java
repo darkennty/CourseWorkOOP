@@ -1,7 +1,7 @@
 package domain;
 
-import actionListeners.ActionListenerForExit;
-import actionListeners.ActionListenerForMainMenu;
+import action.listeners.ActionListenerForGameExit;
+import action.listeners.ActionListenerForMainMenu;
 import database.MyDataBase;
 import labels.MoveColorLabel;
 import persistence.CheckersPersistence;
@@ -21,6 +21,7 @@ public class CheckersGame implements ActionListener {
     private final JPanel gamePanel = new JPanel();
     private final JButton[][] board = new JButton[SIZE][SIZE];
     private CheckerPiecesColors[][] pieces;
+    private final String[][] borderColor = new String[SIZE][SIZE];
     private JButton selectedButton;
     private Color movablePieceColor;
     private Color lastMovablePieceColor = Color.BLACK;
@@ -30,15 +31,10 @@ public class CheckersGame implements ActionListener {
     private final GridBagLayout layout;
     private final CheckersPersistence persistence = new CheckersPersistence();
     private final LastMovePersistence movePersistence = new LastMovePersistence();
-    private static CheckersGame instance;
-    private static CardLayout cardLayout;
-    private static JPanel cardPanel;
     private final MyDataBase db = MyDataBase.getInstance();
+    private int requiredMovesCounter = 0;
 
     public CheckersGame(CardLayout cardLayout, JPanel cardPanel) {
-
-        this.cardLayout = cardLayout;
-        this.cardPanel = cardPanel;
 
         layout = new GridBagLayout();
         gamePanel.setLayout(layout);
@@ -64,12 +60,12 @@ public class CheckersGame implements ActionListener {
         c.gridwidth = 2;
 
         JButton menu = new JButton("Выход в меню");
-        menu.addActionListener(new ActionListenerForMainMenu(cardLayout, cardPanel, "menu"));
+        menu.addActionListener(new ActionListenerForMainMenu(cardLayout, cardPanel, "menu", this));
         layout.setConstraints(menu, c);
         gamePanel.add(menu);
 
         JButton exit = new JButton("Выход из игры");
-        exit.addActionListener(new ActionListenerForExit());
+        exit.addActionListener(new ActionListenerForGameExit(this));
         layout.setConstraints(exit, c);
         gamePanel.add(exit);
 
@@ -79,13 +75,6 @@ public class CheckersGame implements ActionListener {
 
     public JPanel getGamePanel() {
         return gamePanel;
-    }
-
-    public synchronized static CheckersGame getInstance() {
-        if (instance == null) {
-            instance = new CheckersGame(cardLayout, cardPanel);
-        }
-        return instance;
     }
 
     public void createBoard() {
@@ -101,7 +90,7 @@ public class CheckersGame implements ActionListener {
 
                 board[i][j].setPreferredSize(new Dimension(60,60));
                 board[i][j].addActionListener(this);
-                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GREEN));
+                borderColor[i][j] = Color.GREEN.toString();
                 board[i][j].setBorderPainted(false);
 
                 layout.setConstraints(board[i][j], c);
@@ -138,8 +127,9 @@ public class CheckersGame implements ActionListener {
                 } else {
                     pieces[i][j] = new CheckerPiecesColors(Color.YELLOW);
                 }
+                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GREEN));
 
-                persistence.createChecker(id, i, j, pieces[i][j].getColor().toString());
+                persistence.createChecker(id, i, j, borderColor[i][j], pieces[i][j].getColor().toString());
 
                 id++;
             }
@@ -159,37 +149,75 @@ public class CheckersGame implements ActionListener {
 
         updateMove(lastMovablePieceColor);
 
-        Map<Integer, int[]> whiteCheckers = db.getWhiteCheckers();
-        Map<Integer, int[]> blackCheckers = db.getBlackCheckers();
-        Map<Integer, int[]> whiteQueens = db.getWhiteQueens();
-        Map<Integer, int[]> blackQueens = db.getBlackQueens();
-        Map<Integer, int[]> otherFields = db.getAllFields();
+        Map<Integer, String[]> whiteCheckers = db.getWhiteCheckers();
+        Map<Integer, String[]> blackCheckers = db.getBlackCheckers();
+        Map<Integer, String[]> whiteQueens = db.getWhiteQueens();
+        Map<Integer, String[]> blackQueens = db.getBlackQueens();
+        Map<Integer, String[]> otherFields = db.getAllFields();
 
-        int[] coord;
+        String[] data;
+
+        int x;
+        int y;
 
         for (int i = 0; i < CELLS_QUANTITY; i++) {
             if (whiteCheckers.containsKey(i)) {
-                coord = whiteCheckers.get(i);
-                board[coord[0]][coord[1]].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_checker.PNG"));
-                pieces[coord[0]][coord[1]] = new CheckerPiecesColors(Color.WHITE);
+                data = whiteCheckers.get(i);
+
+                x = Integer.parseInt(data[0]);
+                y = Integer.parseInt(data[1]);
+
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_checker.PNG"));
+                pieces[x][y] = new CheckerPiecesColors(Color.WHITE);
+                borderColor[x][y] = data[2];
             } else if (blackCheckers.containsKey(i)) {
-                coord = blackCheckers.get(i);
-                board[coord[0]][coord[1]].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_checker.PNG"));
-                pieces[coord[0]][coord[1]] = new CheckerPiecesColors(Color.BLACK);
+                data = blackCheckers.get(i);
+
+                x = Integer.parseInt(data[0]);
+                y = Integer.parseInt(data[1]);
+
+
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_checker.PNG"));
+                pieces[x][y] = new CheckerPiecesColors(Color.BLACK);
+                borderColor[x][y] = data[2];
             } else if (whiteQueens.containsKey(i)) {
-                coord = whiteQueens.get(i);
-                board[coord[0]][coord[1]].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_damka.png"));
-                pieces[coord[0]][coord[1]] = new CheckerPiecesColors(Color.LIGHT_GRAY);
+                data = whiteQueens.get(i);
+
+                x = Integer.parseInt(data[0]);
+                y = Integer.parseInt(data[1]);
+
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_damka.png"));
+                pieces[x][y] = new CheckerPiecesColors(Color.LIGHT_GRAY);
+                borderColor[x][y] = data[2];
             } else if (blackQueens.containsKey(i)) {
-                coord = whiteQueens.get(i);
-                board[coord[0]][coord[1]].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_damka.png"));
-                pieces[coord[0]][coord[1]] = new CheckerPiecesColors(Color.DARK_GRAY);
+                data = blackQueens.get(i);
+
+                x = Integer.parseInt(data[0]);
+                y = Integer.parseInt(data[1]);
+
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_damka.png"));
+                pieces[x][y] = new CheckerPiecesColors(Color.DARK_GRAY);
+                borderColor[x][y] = data[2];
             } else {
-                coord = otherFields.get(i);
-                board[coord[0]][coord[1]].setIcon(null);
-                pieces[coord[0]][coord[1]] = new CheckerPiecesColors(Color.YELLOW);
+                data = otherFields.get(i);
+
+                x = Integer.parseInt(data[0]);
+                y = Integer.parseInt(data[1]);
+
+                board[x][y].setIcon(null);
+                pieces[x][y] = new CheckerPiecesColors(Color.YELLOW);
+                borderColor[x][y] = data[2];
             }
-            persistence.updateChecker(i, coord[0], coord[1], pieces[coord[0]][coord[1]].getColor().toString());
+            persistence.updateChecker(i, x, y, borderColor[x][y], pieces[x][y].getColor().toString());
+
+            if (borderColor[x][y].equals(Color.RED.toString())) {
+                board[x][y].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                board[x][y].setBorderPainted(true);
+                requiredMovesCounter++;
+            } else {
+                board[x][y].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GREEN));
+                board[x][y].setBorderPainted(false);
+            }
         }
     }
 
@@ -210,12 +238,18 @@ public class CheckersGame implements ActionListener {
                 flag = pieces[row][col].getColor() != Color.DARK_GRAY && pieces[row][col].getColor() != Color.BLACK && pieces[row][col].getColor() != Color.YELLOW;
             }
 
-            if (selectedButton == null && flag) {
+            if (selectedButton == null && flag && (requiredMovesCounter == 0 || borderColor[row][col].equals(Color.RED.toString()))) {
                 selectedButton = buttonClicked;
                 movablePieceColor = pieces[row][col].getColor();
+                selectedButton.setBorder(BorderFactory.createMatteBorder(2,2,2,2,Color.GREEN));
                 selectedButton.setBorderPainted(true);
             } else if (selectedButton != null && buttonClicked == selectedButton) {
-                selectedButton.setBorderPainted(false);
+                if (borderColor[row][col].equals(Color.GREEN.toString())) {
+                    selectedButton.setBorderPainted(false);
+                } else {
+                    selectedButton.setBorder(BorderFactory.createMatteBorder(2,2,2,2,Color.RED));
+                }
+
                 selectedButton = null;
             } else if (selectedButton != null) {
                 int fromRow = findRow(selectedButton);
@@ -333,7 +367,7 @@ public class CheckersGame implements ActionListener {
                     pieces[toRow][toCol] = pieces[fromRow][fromCol];
                     pieces[fromRow][fromCol] = new CheckerPiecesColors(Color.YELLOW);
                     checkRightMove = true;
-                } else if ((movablePieceColor.equals(Color.WHITE) || movablePieceColor.equals(Color.BLACK)) && rowDiff == 2 && colDiff == 2 && pieces[toRow][toCol].getColor().equals(Color.YELLOW) && !pieces[middleCheckerRow][middleCheckerCol].getColor().equals(movablePieceColor)) {
+                } else if ((movablePieceColor.equals(Color.WHITE) || movablePieceColor.equals(Color.BLACK)) && rowDiff == 2 && colDiff == 2 && pieces[toRow][toCol].getColor().equals(Color.YELLOW) && !pieces[middleCheckerRow][middleCheckerCol].getColor().equals(movablePieceColor) && !pieces[middleCheckerRow][middleCheckerCol].getColor().equals(Color.YELLOW)) {
                     pieces[toRow][toCol] = pieces[fromRow][fromCol];
                     pieces[fromRow][fromCol] = new CheckerPiecesColors(Color.YELLOW);
                     pieces[middleCheckerRow][middleCheckerCol] = new CheckerPiecesColors(Color.YELLOW);
@@ -361,9 +395,9 @@ public class CheckersGame implements ActionListener {
                     selectedButton.setBorderPainted(false);
                     selectedButton = null;
                     lastMovablePieceColor = movablePieceColor;
-                }
 
-                updateBoard();
+                    updateBoard();
+                }
             }
         }
     }
@@ -384,6 +418,7 @@ public class CheckersGame implements ActionListener {
             } else {
                 int j = fromCol - 1;
                 for (int i = fromRow + 1; i < toRow; ++i) {
+
                     counter = checkRightEat(i, j, counter);
                     if (counter == -1) {
                         return counter;
@@ -418,7 +453,7 @@ public class CheckersGame implements ActionListener {
 
     private int checkRightEat(int i, int j, int counter) {
 
-        if (pieces[i][j] == null) {
+        if (pieces[i][j].getColor().equals(Color.YELLOW)) {
             return counter;
         } else if (movablePieceColor == Color.WHITE || movablePieceColor == Color.LIGHT_GRAY) {
             if (pieces[i][j].getColor().equals(Color.BLACK) || pieces[i][j].getColor().equals(Color.DARK_GRAY)) {
@@ -497,20 +532,101 @@ public class CheckersGame implements ActionListener {
     public void updateBoard() {
         int whiteCheckersCounter = 0;
         int blackCheckersCounter = 0;
-        int id = 0;
+
+        requiredMovesCounter = 0;
 
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
+                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GREEN));
+                board[i][j].setBorderPainted(false);
+                borderColor[i][j] = Color.GREEN.toString();
+
                 if (!pieces[i][j].getColor().equals(Color.YELLOW)) {
                     if (pieces[i][j].getColor().equals(Color.WHITE)) {
                         ++whiteCheckersCounter;
                         board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_checker.png"));
+                        if (checkIfCanEat(i, j)) {
+                            board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                            board[i][j].setBorderPainted(true);
+                            borderColor[i][j] = Color.RED.toString();
+                            requiredMovesCounter++;
+                        }
                     } else if (pieces[i][j].getColor().equals(Color.BLACK)) {
                         ++blackCheckersCounter;
                         board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_checker.png"));
+                        if (checkIfCanEat(i, j)) {
+                            board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                            board[i][j].setBorderPainted(true);
+                            borderColor[i][j] = Color.RED.toString();
+                            requiredMovesCounter++;
+                        }
                     } else if (pieces[i][j].getColor().equals(Color.LIGHT_GRAY)) {
                         ++whiteCheckersCounter;
                         board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_damka.png"));
+
+                        if (movablePieceColor == Color.BLACK) {
+
+                            for (int k = 0; k < SIZE ; k++) {
+                                for (int l = 0; l < SIZE; l++) {
+                                    int eatableCheckers;
+
+                                    int rowDiff = Math.abs(i - k);
+                                    int colDiff = Math.abs(j - l);
+
+                                    if (rowDiff == colDiff && i > k && j > l) {
+                                        eatableCheckers = countCheckersBetweenCells(i, k, j, l);
+                                        System.out.println("eatable: " + eatableCheckers);
+                                        if (eatableCheckers == -1) {
+                                            if (pieces[k + 1][l + 1].getColor().equals(Color.BLACK) || pieces[k + 1][l + 1].getColor().equals(Color.DARK_GRAY)) {
+                                                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                                                board[i][j].setBorderPainted(true);
+                                                borderColor[i][j] = Color.RED.toString();
+                                                requiredMovesCounter++;
+                                                break;
+                                            }
+                                        }
+                                        System.out.println("1");
+                                    } else if (rowDiff == colDiff && i > k && j < l) {
+                                        eatableCheckers = countCheckersBetweenCells(i, k, j, l);
+                                        System.out.println("eatable: " + eatableCheckers);
+                                        if (eatableCheckers == -1) {
+                                            if (pieces[k + 1][l - 1].getColor().equals(Color.BLACK) || pieces[k + 1][l - 1].getColor().equals(Color.DARK_GRAY)) {
+                                                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                                                board[i][j].setBorderPainted(true);
+                                                borderColor[i][j] = Color.RED.toString();
+                                                requiredMovesCounter++;
+                                                break;
+                                            }
+                                        }
+                                        System.out.println("2");
+                                    } else if (rowDiff == colDiff && i < k && j > l) {
+                                        eatableCheckers = countCheckersBetweenCells(i, k, j, l);
+                                        System.out.println("eatable: " + eatableCheckers);
+                                        if (eatableCheckers == -1) {
+                                            if (pieces[k - 1][l + 1].getColor().equals(Color.BLACK) || pieces[k - 1][l + 1].getColor().equals(Color.DARK_GRAY)) {
+                                                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                                                board[i][j].setBorderPainted(true);
+                                                borderColor[i][j] = Color.RED.toString();
+                                                requiredMovesCounter++;
+                                            }
+                                        }
+                                        System.out.println("3");
+                                    } else if (rowDiff == colDiff && i < k && j < l) {
+                                        eatableCheckers = countCheckersBetweenCells(i, k, j, l);
+                                        System.out.println("eatable: " + eatableCheckers);
+                                        if (eatableCheckers == -1) {
+                                            if (pieces[k - 1][l - 1].getColor().equals(Color.BLACK) || pieces[k - 1][l - 1].getColor().equals(Color.DARK_GRAY)) {
+                                                board[i][j].setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+                                                board[i][j].setBorderPainted(true);
+                                                borderColor[i][j] = Color.RED.toString();
+                                                requiredMovesCounter++;
+                                            }
+                                        }
+                                        System.out.println("4");
+                                    }
+                                }
+                            }
+                        }
                     } else if (pieces[i][j].getColor().equals(Color.DARK_GRAY)) {
                         ++blackCheckersCounter;
                         board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_damka.png"));
@@ -518,8 +634,6 @@ public class CheckersGame implements ActionListener {
                 } else {
                     board[i][j].setIcon(null);
                 }
-                persistence.updateChecker(id, i, j, pieces[i][j].getColor().toString());
-                id++;
             }
         }
 
@@ -528,11 +642,88 @@ public class CheckersGame implements ActionListener {
             db.deleteCheckers();
         } else if (blackCheckersCounter == 0) {
             updateMove(Color.RED);
+            db.deleteCheckers();
         }
+    }
+
+    public boolean checkIfCanEat(int i, int j) {
+        if (pieces[i][j].getColor().equals(Color.WHITE) && lastMovablePieceColor == Color.BLACK) {
+            if (i >= 2 && j >= 2) {
+                if ((pieces[i - 1][j - 1].getColor().equals(Color.BLACK) || pieces[i - 1][j - 1].getColor().equals(Color.DARK_GRAY)) && pieces[i - 2][j - 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i <= 5 && j <= 5) {
+                if ((pieces[i + 1][j + 1].getColor().equals(Color.BLACK) || pieces[i + 1][j + 1].getColor().equals(Color.DARK_GRAY)) && pieces[i + 2][j + 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i <= 5 && j >= 2) {
+                if ((pieces[i + 1][j - 1].getColor().equals(Color.BLACK) || pieces[i + 1][j - 1].getColor().equals(Color.DARK_GRAY)) && pieces[i + 2][j - 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i >= 2 && j <= 5) {
+                if ((pieces[i - 1][j + 1].getColor().equals(Color.BLACK) || pieces[i - 1][j + 1].getColor().equals(Color.DARK_GRAY)) && pieces[i - 2][j + 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+        } else if (pieces[i][j].getColor().equals(Color.BLACK) && lastMovablePieceColor == Color.WHITE) {
+            if (i >= 2 && j >= 2) {
+                if ((pieces[i - 1][j - 1].getColor().equals(Color.WHITE) || pieces[i - 1][j - 1].getColor().equals(Color.LIGHT_GRAY)) && pieces[i - 2][j - 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i <= 5 && j <= 5) {
+                if ((pieces[i + 1][j + 1].getColor().equals(Color.WHITE) || pieces[i + 1][j + 1].getColor().equals(Color.LIGHT_GRAY)) && pieces[i + 2][j + 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i <= 5 && j >= 2) {
+                if ((pieces[i + 1][j - 1].getColor().equals(Color.WHITE) || pieces[i + 1][j - 1].getColor().equals(Color.LIGHT_GRAY)) && pieces[i + 2][j - 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+
+            if (i >= 2 && j <= 5) {
+                if ((pieces[i - 1][j + 1].getColor().equals(Color.WHITE) || pieces[i - 1][j + 1].getColor().equals(Color.LIGHT_GRAY)) && pieces[i - 2][j + 2].getColor().equals(Color.YELLOW)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public void updateMove(Color color) {
         label.view(color);
         movePersistence.updateLastMove(color.toString());
+    }
+
+    public void saveBoard(CheckerPiecesColors[][] pieces, Color color) {
+        this.pieces = pieces;
+
+        int id = 0;
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                persistence.updateChecker(id, i, j, borderColor[i][j], pieces[i][j].getColor().toString());
+                id++;
+            }
+        }
+
+        movePersistence.updateLastMove(color.toString());
+    }
+
+    public Color getLastMoveColor() {
+        return lastMovablePieceColor;
+    }
+
+    public CheckerPiecesColors[][] getPieces() {
+        return pieces;
     }
 }

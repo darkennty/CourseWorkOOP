@@ -1,5 +1,6 @@
-package actionListeners;
+package action.listeners;
 
+import database.MyDataBase;
 import domain.CheckersGame;
 
 import javax.swing.*;
@@ -13,6 +14,7 @@ public class ActionListenerForContinueGame implements ActionListener {
     private final JPanel container;
     private final String panelNameToSwitchTo;
     private final CheckersGame game;
+    private final MyDataBase db = MyDataBase.getInstance();
 
     public ActionListenerForContinueGame(CheckersGame game, CardLayout cardLayout, JPanel container, String panelNameToSwitchTo) {
         this.cardLayout = cardLayout;
@@ -23,7 +25,11 @@ public class ActionListenerForContinueGame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        game.loadBoard();
+        if (db.getAllFields().isEmpty()) {
+            game.initializeBoard();
+        } else {
+            game.loadBoard();
+        }
         cardLayout.show(container, panelNameToSwitchTo);
     }
 }

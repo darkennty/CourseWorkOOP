@@ -1,4 +1,4 @@
-package actionListeners;
+package action.listeners;
 
 import database.MyDataBase;
 import domain.CheckersGame;

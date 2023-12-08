@@ -31,4 +31,3 @@ public class PropertiesFactory {
         System.out.println();
     }
 }
-

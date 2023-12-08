@@ -44,6 +44,7 @@ public class MyDataBase {
             id serial primary key,
             xAxis integer,
             yAxis integer,
+            borderColor text,
             color text
         )
         """;
@@ -61,18 +62,19 @@ public class MyDataBase {
         execute(sql);
     }
 
-    public Map<Integer, int[]> getWhiteCheckers() {
-        Map<Integer, int[]> data = new HashMap<>();
-        String sql = "SELECT id, xAxis, yAxis FROM game.field where color = 'java.awt.Color[r=255,g=255,b=255]'";
+    public Map<Integer, String[]> getWhiteCheckers() {
+        Map<Integer, String[]> data = new HashMap<>();
+        String sql = "SELECT id, xAxis, yAxis, borderColor FROM game.field where color = 'java.awt.Color[r=255,g=255,b=255]'";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery(sql);
 
             while (set.next()) {
-                data.put(set.getInt("id"), new int[] {
-                        set.getInt("xAxis"),
-                        set.getInt("yAxis")
+                data.put(set.getInt("id"), new String[] {
+                        set.getString("xAxis"),
+                        set.getString("yAxis"),
+                        set.getString("borderColor")
                 });
             }
         } catch (SQLException ex) {
@@ -82,18 +84,19 @@ public class MyDataBase {
         return data;
     }
 
-    public Map<Integer, int[]> getBlackCheckers() {
-        Map<Integer, int[]> data = new HashMap<>();
-        String sql = "SELECT id, xAxis, yAxis FROM game.field where color = 'java.awt.Color[r=0,g=0,b=0]'";
+    public Map<Integer, String[]> getBlackCheckers() {
+        Map<Integer, String[]> data = new HashMap<>();
+        String sql = "SELECT id, xAxis, yAxis, borderColor FROM game.field where color = 'java.awt.Color[r=0,g=0,b=0]'";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery(sql);
 
             while (set.next()) {
-                data.put(set.getInt("id"), new int[] {
-                        set.getInt("xAxis"),
-                        set.getInt("yAxis")
+                data.put(set.getInt("id"), new String[] {
+                        set.getString("xAxis"),
+                        set.getString("yAxis"),
+                        set.getString("borderColor")
                 });
             }
         } catch (SQLException ex) {
@@ -103,18 +106,19 @@ public class MyDataBase {
         return data;
     }
 
-    public Map<Integer, int[]> getWhiteQueens() {
-        Map<Integer, int[]> data = new HashMap<>();
-        String sql = "SELECT id, xAxis, yAxis FROM game.field where color = 'java.awt.Color[r=192,g=192,b=192]'";
+    public Map<Integer, String[]> getWhiteQueens() {
+        Map<Integer, String[]> data = new HashMap<>();
+        String sql = "SELECT id, xAxis, yAxis, borderColor FROM game.field where color = 'java.awt.Color[r=192,g=192,b=192]'";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery(sql);
 
             while (set.next()) {
-                data.put(set.getInt("id"), new int[] {
-                        set.getInt("xAxis"),
-                        set.getInt("yAxis")
+                data.put(set.getInt("id"), new String[] {
+                        set.getString("xAxis"),
+                        set.getString("yAxis"),
+                        set.getString("borderColor")
                 });
             }
         } catch (SQLException ex) {
@@ -124,18 +128,19 @@ public class MyDataBase {
         return data;
     }
 
-    public Map<Integer, int[]> getBlackQueens() {
-        Map<Integer, int[]> data = new HashMap<>();
-        String sql = "SELECT id, xAxis, yAxis FROM game.field where color = 'java.awt.Color[r=64,g=64,b=64]'";
+    public Map<Integer, String[]> getBlackQueens() {
+        Map<Integer, String[]> data = new HashMap<>();
+        String sql = "SELECT id, xAxis, yAxis, borderColor FROM game.field where color = 'java.awt.Color[r=64,g=64,b=64]'";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery(sql);
 
             while (set.next()) {
-                data.put(set.getInt("id"), new int[] {
-                        set.getInt("xAxis"),
-                        set.getInt("yAxis")
+                data.put(set.getInt("id"), new String[] {
+                        set.getString("xAxis"),
+                        set.getString("yAxis"),
+                        set.getString("borderColor")
                 });
             }
         } catch (SQLException ex) {
@@ -145,16 +150,20 @@ public class MyDataBase {
         return data;
     }
 
-    public Map<Integer, int[]> getAllFields() {
-        Map<Integer, int[]> data = new HashMap<>();
-        String sql = "SELECT id, xAxis, yAxis FROM game.field";
+    public Map<Integer, String[]> getAllFields() {
+        Map<Integer, String[]> data = new HashMap<>();
+        String sql = "SELECT id, xAxis, yAxis, borderColor FROM game.field";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement()) {
             ResultSet set = statement.executeQuery(sql);
 
             while (set.next()) {
-                data.put(set.getInt("id"), new int[] {set.getInt("xAxis"), set.getInt("yAxis")});
+                data.put(set.getInt("id"), new String[] {
+                        set.getString("xAxis"),
+                        set.getString("yAxis"),
+                        set.getString("borderColor")
+                });
             }
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());

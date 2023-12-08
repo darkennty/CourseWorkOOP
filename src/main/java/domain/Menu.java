@@ -1,8 +1,8 @@
 package domain;
 
-import actionListeners.ActionListenerForContinueGame;
-import actionListeners.ActionListenerForExit;
-import actionListeners.ActionListenerForStartGame;
+import action.listeners.ActionListenerForContinueGame;
+import action.listeners.ActionListenerForExit;
+import action.listeners.ActionListenerForStartGame;
 import labels.PoddavkiLabel;
 import panels.ImagePanel;
 
@@ -19,7 +19,7 @@ public class Menu extends JFrame {
     public Menu() {
         super("Checkers Surrender");
 
-        super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        super.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         super.setSize(480, 510);
 
         menuPanel = new ImagePanel();
