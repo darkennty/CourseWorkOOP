@@ -28,7 +28,9 @@ public class ActionListenerForStartGame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         db.deleteCheckers();
         db.deleteLastMove();
+        game.updateMove(Color.BLACK);
         game.initializeBoard();
+        game.getSelectedButtonNull();
         cardLayout.show(container, panelNameToSwitchTo);
     }
 }

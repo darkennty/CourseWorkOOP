@@ -26,6 +26,8 @@ public class ActionListenerForContinueGame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (db.getAllFields().isEmpty()) {
+            db.deleteLastMove();
+            game.updateMove(Color.BLACK);
             game.initializeBoard();
         } else {
             game.loadBoard();
