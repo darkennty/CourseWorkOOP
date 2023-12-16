@@ -1,7 +1,6 @@
 package action.listeners;
 
 import domain.CheckerPiecesColors;
-import domain.CheckersGame;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

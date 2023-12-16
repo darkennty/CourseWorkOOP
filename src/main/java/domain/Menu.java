@@ -3,6 +3,7 @@ package domain;
 import action.listeners.ActionListenerForContinueGame;
 import action.listeners.ActionListenerForExit;
 import action.listeners.ActionListenerForStartGame;
+import action.listeners.CheckersGame;
 import labels.PoddavkiLabel;
 import panels.ImagePanel;
 
@@ -32,7 +33,6 @@ public class Menu extends JFrame {
         PoddavkiLabel label = new PoddavkiLabel();
 
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(Color.decode("#D2B48C"));
         menuPanel.setBorder(BorderFactory.createLineBorder(Color.black));
         menuPanel.setPreferredSize(new Dimension(480, 510));
 

@@ -1,7 +1,6 @@
 package action.listeners;
 
 import database.MyDataBase;
-import domain.CheckersGame;
 
 import javax.swing.*;
 import java.awt.*;

@@ -27,10 +27,19 @@ class ActionListenerForStartGame {
 
 class ActionListenerForMainMenu {
     - cardLayout : CardLayout
-    - container : Container
+    - container : JPanel
     - panelNameToSwitchTo : String
+    - db : MyDataBase
+    - game : CheckersGame
 
-    + ActionListenerForMainMenu(CardLayout, Container, String)
+    + ActionListenerForMainMenu(CardLayout, Container, String, CheckersGame)
+    + actionPerformed(ActionEvent) : void
+}
+
+class ActionListenerForGameExit {
+    - game : CheckersGame
+
+    + ActionListenerForMainMenu(CheckersGame)
     + actionPerformed(ActionEvent) : void
 }
 
@@ -44,6 +53,7 @@ class ActionListenerForContinueGame {
     - container : JPanel
     - game : CheckersGame
     - panelNameToSwitchTo : String
+    - db : MyDataBase
 
     + ActionListenerForStartGame(CheckersGame, CardLayout, JPanel, String)
     + actionPerformed(ActionEvent) : void
@@ -83,6 +93,7 @@ class MyDataBase {
     + execute(String) : void
     + getAllFields() : Map<Integer, int[]>
     + getBlackCheckers() : Map<Integer, int[]>
+    + getBlackQueens() : Map<Integer, int[]>
     + getInstance() : MyDataBase
     + getLastMove() : String
     + getWhiteCheckers() : Map<Integer, int[]>
@@ -91,6 +102,7 @@ class MyDataBase {
 
 class CheckersGame {
     - board : JButton[][]
+    - borderColor : String[][]
     - c : GridBagConstraints
     - cardLayout : CardLayout
     - cardPanel : JPanel
@@ -105,10 +117,12 @@ class CheckersGame {
     - movePersistence : LastMovePersistence
     - persistence : CheckersPersistence
     - pieces : CheckerPiecesColors[][]
+    + requiredMovesCounter : int
     - selectedButton : JButton
 
     + CheckersGame(CardLayout, JPanel)
     + actionPerformed(ActionEvent) : void
+    + checkIfCanEat(int, int) : boolean
     - checkRightEat(int, int, int) : int
     - countCheckersBetweenCells(int, int, int, int) : int
     + createBoard() : void
@@ -116,7 +130,9 @@ class CheckersGame {
     - findCol(JButton) : int
     - findRow(JButton) : int
     + getGamePanel() : JPanel
-    + getInstance() : CheckersGame
+    + getLastMoveColor() : Color
+    + getPieces() : CheckerPiecesColors[][]
+    + setSelectedButtonNull() : void
     + initializeBoard() : void
     + loadBoard() : void
     + updateBoard() : void
@@ -163,21 +179,28 @@ class LastMovePersistence {
     + updateLastMove(String) : void
 }
 
-Main <-- Menu
+Main ..> Menu
 Menu <-- CheckersGame
 Menu *-- ActionListenerForStartGame
 Menu *-- ActionListenerForContinueGame
 Menu *-- ActionListenerForExit
 Menu *-- ImagePanel
 Menu *-- PoddavkiLabel
+
 CheckersGame *-- MoveColorLabel
-CheckersGame *-- ActionListenerForExit
+CheckersGame *-- ActionListenerForGameExit
 CheckersGame *-- ActionListenerForMainMenu
 CheckersGame *-- CheckerPiecesColors
 CheckersGame *-- LastMovePersistence
 CheckersGame *-- CheckersPersistence
 CheckersGame <-- Consts
 CheckersGame o-- MyDataBase
+ActionListenerForStartGame o-- MyDataBase
+ActionListenerForContinueGame o-- MyDataBase
+CheckersPersistence o-- MyDataBase
+LastMovePersistence o-- MyDataBase
+ActionListenerForMainMenu o-- MyDataBase
+
 MyDataBase *-- DatabaseProperties
 PropertiesFactory *-- DatabaseProperties
 

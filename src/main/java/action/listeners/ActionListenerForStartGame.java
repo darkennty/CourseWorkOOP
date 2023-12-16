@@ -1,8 +1,6 @@
 package action.listeners;
 
 import database.MyDataBase;
-import domain.CheckersGame;
-import persistence.CheckersPersistence;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,7 +28,7 @@ public class ActionListenerForStartGame implements ActionListener {
         db.deleteLastMove();
         game.updateMove(Color.BLACK);
         game.initializeBoard();
-        game.getSelectedButtonNull();
+        game.setSelectedButtonNull();
         cardLayout.show(container, panelNameToSwitchTo);
     }
 }

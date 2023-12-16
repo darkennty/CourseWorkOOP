@@ -1,8 +1,9 @@
-package domain;
+package action.listeners;
 
 import action.listeners.ActionListenerForGameExit;
 import action.listeners.ActionListenerForMainMenu;
 import database.MyDataBase;
+import domain.CheckerPiecesColors;
 import labels.MoveColorLabel;
 import persistence.CheckersPersistence;
 import persistence.LastMovePersistence;
@@ -59,12 +60,12 @@ public class CheckersGame implements ActionListener {
 
         c.gridwidth = 2;
 
-        JButton menu = new JButton("Выход в меню");
-        menu.addActionListener(new ActionListenerForMainMenu(cardLayout, cardPanel, "menu", this));
-        layout.setConstraints(menu, c);
-        gamePanel.add(menu);
+        JButton backToMenu = new JButton("Выйти в меню");
+        backToMenu.addActionListener(new ActionListenerForMainMenu(cardLayout, cardPanel, "menu", this));
+        layout.setConstraints(backToMenu, c);
+        gamePanel.add(backToMenu);
 
-        JButton exit = new JButton("Выход из игры");
+        JButton exit = new JButton("Выйти из игры");
         exit.addActionListener(new ActionListenerForGameExit(this));
         layout.setConstraints(exit, c);
         gamePanel.add(exit);
@@ -802,7 +803,7 @@ public class CheckersGame implements ActionListener {
         return pieces;
     }
 
-    public void getSelectedButtonNull() {
+    public void setSelectedButtonNull() {
         selectedButton = null;
     }
 }
