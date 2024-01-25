@@ -1,7 +1,5 @@
 package action.listeners;
 
-import action.listeners.ActionListenerForGameExit;
-import action.listeners.ActionListenerForMainMenu;
 import database.MyDataBase;
 import domain.CheckerPiecesColors;
 import labels.MoveColorLabel;
@@ -34,6 +32,7 @@ public class CheckersGame implements ActionListener {
     private final LastMovePersistence movePersistence = new LastMovePersistence();
     private final MyDataBase db = MyDataBase.getInstance();
     private int requiredMovesCounter = 0;
+    private boolean isCheckersEaten = false;
 
     public CheckersGame(CardLayout cardLayout, JPanel cardPanel) {
 
@@ -188,7 +187,7 @@ public class CheckersGame implements ActionListener {
                 x = Integer.parseInt(data[0]);
                 y = Integer.parseInt(data[1]);
 
-                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_damka.png"));
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_queen.png"));
                 pieces[x][y] = new CheckerPiecesColors(Color.LIGHT_GRAY);
                 borderColor[x][y] = data[2];
             } else if (blackQueens.containsKey(i)) {
@@ -197,7 +196,7 @@ public class CheckersGame implements ActionListener {
                 x = Integer.parseInt(data[0]);
                 y = Integer.parseInt(data[1]);
 
-                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_damka.png"));
+                board[x][y].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_queen.png"));
                 pieces[x][y] = new CheckerPiecesColors(Color.DARK_GRAY);
                 borderColor[x][y] = data[2];
             } else {
@@ -374,6 +373,7 @@ public class CheckersGame implements ActionListener {
                     pieces[fromRow][fromCol] = new CheckerPiecesColors(Color.YELLOW);
                     pieces[middleCheckerRow][middleCheckerCol] = new CheckerPiecesColors(Color.YELLOW);
                     checkRightMove = true;
+                    isCheckersEaten = true;
                 }
 
                 final int whiteQueenRow = 0;
@@ -387,18 +387,33 @@ public class CheckersGame implements ActionListener {
                 }
 
                 if (checkRightMove) {
-                    if (movablePieceColor.equals(Color.LIGHT_GRAY)) {
-                        movablePieceColor = Color.WHITE;
-                    } else if (movablePieceColor.equals(Color.DARK_GRAY)) {
-                        movablePieceColor = Color.BLACK;
-                    }
-
-                    updateMove(movablePieceColor);
-                    selectedButton.setBorderPainted(false);
-                    selectedButton = null;
-                    lastMovablePieceColor = movablePieceColor;
-
                     updateBoard();
+
+                    if (borderColor[toRow][toCol].equals(Color.RED.toString()) && isCheckersEaten) {
+                        for (int i = 0; i < SIZE; i++) {
+                            for (int j = 0; j < SIZE; j++) {
+                                if (i != toRow && j != toCol) {
+                                    borderColor[i][j] = Color.GREEN.toString();
+                                }
+                            }
+                        }
+                        selectedButton = null;
+                    } else {
+                        if (movablePieceColor.equals(Color.LIGHT_GRAY)) {
+                            movablePieceColor = Color.WHITE;
+                        } else if (movablePieceColor.equals(Color.DARK_GRAY)) {
+                            movablePieceColor = Color.BLACK;
+                        }
+
+                        updateMove(movablePieceColor);
+                        selectedButton.setBorderPainted(false);
+                        selectedButton = null;
+                        lastMovablePieceColor = movablePieceColor;
+
+                        isCheckersEaten = false;
+
+                        updateBoard();
+                    }
                 }
             }
         }
@@ -477,6 +492,7 @@ public class CheckersGame implements ActionListener {
     }
 
     private void eatCheckersByQueen(int fromRow, int toRow, int fromCol, int toCol) {
+        isCheckersEaten = true;
 
         if (fromRow < toRow) {
             if (fromCol < toCol) {
@@ -567,7 +583,7 @@ public class CheckersGame implements ActionListener {
                     }
 
                     if (pieces[i][j].getColor().equals(Color.LIGHT_GRAY)) {
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\white_queen.png"));
 
                         if (movablePieceColor == Color.BLACK) {
                             cycle:
@@ -637,7 +653,7 @@ public class CheckersGame implements ActionListener {
                     }
 
                     if (pieces[i][j].getColor().equals(Color.DARK_GRAY)) {
-                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_damka.png"));
+                        board[i][j].setIcon(new ImageIcon(cwd + "\\src\\main\\resources\\images\\black_queen.png"));
 
                         if (movablePieceColor == Color.WHITE) {
                             cycle:
